@@ -79,5 +79,37 @@ validCount++;
 }
 file.close();
 std::cout << "Успешно распарсено: " << validCount << " строк" << std::endl;
+// stats
+int infoCount = 0, warningCount = 0, errorCount = 0;
+int outCount = 0; // lines with mark (OUT, .exe)
+for (int i = 0; i < validCount; i++) {
+LogEntry* e = entries[i];
+// count levels
+if (strcmp(e->level, "INFO") == 0) infoCount++;
+else if (strcmp(e->level, "WARNING") == 0) warningCount++;
+else if (strcmp(e->level, "ERROR") == 0) errorCount++;
+// count marks in payload
+if (strstr(e->payload, "OUT:") != nullptr || 
+strstr(e->payload, ".exe:") != nullptr) {
+outCount++;
+}
+}
+// stats output
+std::cout << "\n========== СТАТИСТИКА ==========" << std::endl;
+std::cout << "Всего записей: " << validCount << std::endl;
+std::cout << "\n--- По уровням ---" << std::endl;
+std::cout << "INFO: " << infoCount << std::endl;
+std::cout << "WARNING: " << warningCount << std::endl;
+std::cout << "ERROR: " << errorCount << std::endl;
+std::cout << "\n--- По содержимому ---" << std::endl;
+std::cout << "Строк с маркерами (OUT/.exe): " << outCount << std::endl;
+// clear memory
+for (int i = 0; i < totalLines; i++) {
+if (entries[i] != nullptr) {
+delete[] entries[i]->payload;
+delete entries[i];
+}
+}
+delete[] entries;
 return 0;
 }
